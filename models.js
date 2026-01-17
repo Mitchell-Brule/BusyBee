@@ -1,33 +1,49 @@
-// engine/models.js
+// models.js
 
 class User {
-  constructor({ id, name, timezone, bufferBefore = 30, bufferAfter = 30 }) {
+  constructor({
+    id,
+    name,
+    timezone,
+    bufferBefore = 30,
+    bufferAfter = 30
+  }) {
     this.id = id
     this.name = name
     this.timezone = timezone
-    this.bufferBefore = bufferBefore // in minutes
+    this.bufferBefore = bufferBefore
     this.bufferAfter = bufferAfter
-    this.outlookBlocks = [] // list of OutlookBusyBlock
-    this.customBlocks = []  // list of CustomBlock
-    this.manualOverride = null // e.g., 'DND'
+    this.outlookBlocks = []
+    this.customBlocks = []
+    this.manualOverride = null
   }
 }
 
 class OutlookBusyBlock {
-  constructor({ start, end }) {
-    this.start = new Date(start)
-    this.end = new Date(end)
+  constructor({ startISO, endISO }) {
+    this.startISO = startISO
+    this.endISO = endISO
   }
 }
 
 class CustomBlock {
-  constructor({ type, start, end, days = [], recurring = false }) {
+  constructor({
+    type,
+    startMinutes,
+    endMinutes,
+    days,
+    enabled = true
+  }) {
     this.type = type
-    this.start = new Date(start)
-    this.end = new Date(end)
-    this.days = days // ['Mon', 'Wed']
-    this.recurring = recurring
+    this.startMinutes = startMinutes
+    this.endMinutes = endMinutes
+    this.days = days
+    this.enabled = enabled
   }
 }
 
-module.exports = { User, OutlookBusyBlock, CustomBlock }
+module.exports = {
+  User,
+  OutlookBusyBlock,
+  CustomBlock
+}
