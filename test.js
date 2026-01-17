@@ -1,23 +1,43 @@
-// test/test.js
-const { User, OutlookBusyBlock, CustomBlock } = require('../engine/models')
-const { computeStatus } = require('../engine/availability')
+const { User, OutlookBusyBlock, CustomBlock } = require('./models')
+const { computeStatus } = require('./availability')
 
-const user = new User({ id: 1, name: 'Mitchell', timezone: 'America/Vancouver' })
+// Create user
+const user = new User({
+  id: 1,
+  name: 'Mitchell',
+  timezone: 'America/Vancouver',
+  bufferBefore: 30,
+  bufferAfter: 30
+})
 
-// Example Outlook busy 8:30-9:30 Monday
-user.outlookBlocks.push(new OutlookBusyBlock({ start: '2026-01-19T08:30:00', end: '2026-01-19T09:30:00' }))
+// Outlook meeting Monday 8:30–9:30
+user.outlookBlocks.push(
+  new OutlookBusyBlock({
+    startISO: '2026-01-19T16:30:00Z',
+    endISO: '2026-01-19T17:30:00Z'
+  })
+)
 
-// Custom gym block 18:00-19:00 every Mon/Wed/Fri
-user.customBlocks.push(new CustomBlock({ type: 'Gym', start: '2026-01-19T18:00:00', end: '2026-01-19T19:00:00', days: ['Mon','Wed','Fri'], recurring: true }))
+// Gym M/W/F 18:00–19:30
+user.customBlocks.push(
+  new CustomBlock({
+    type: 'Gym',
+    startMinutes: 18 * 60,
+    endMinutes: 19 * 60 + 30,
+    days: ['Mon','Wed','Fri']
+  })
+)
 
-// Test morning check at 8:15 (buffer should make 8:00 unavailable)
-const morning = new Date('2026-01-19T08:15:00')
-console.log('Morning status:', computeStatus(user, morning))
+// Tests
+console.log('08:15 Monday (should be Busy due to buffer):',
+  computeStatus(user, new Date('2026-01-19T16:15:00Z'))
+)
 
-// Test evening gym check
-const evening = new Date('2026-01-19T18:30:00')
-console.log('Evening status:', computeStatus(user, evening))
+console.log('12:00 Monday (should be Available):',
+  computeStatus(user, new Date('2026-01-19T20:00:00Z'))
+)
 
-// Test free time
-const freeTime = new Date('2026-01-19T12:00:00')
-console.log('Free time status:', computeStatus(user, freeTime))
+console.log('18:30 Monday (should be Busy - gym):',
+  computeStatus(user, new Date('2026-01-20T02:30:00Z'))
+)
+
