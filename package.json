@@ -1,4 +1,15 @@
-"scripts": {
-  "start": "node index.js",
-  "test": "node test.js"
+{
+  "name": "friend-availability",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "date-fns": "^3.6.0",
+    "date-fns-tz": "^3.1.3"
+  }
 }
+
