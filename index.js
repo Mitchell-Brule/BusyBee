@@ -1,46 +1,42 @@
-const express = require("express");
-const { computeStatus } = require("./availability");
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-/*
-  TEMPORARY MOCK DATA
-  This simulates calendar + custom blocks
-  Reasons are INTERNAL ONLY
-*/
-const blocks = [
-  {
-    start: new Date("2026-01-18T08:30:00"),
-    end: new Date("2026-01-18T09:30:00"),
-    reason: "Meeting"
-  },
-  {
-    start: new Date("2026-01-18T18:00:00"),
-    end: new Date("2026-01-18T19:00:00"),
-    reason: "Gym"
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static('public')); // Serve static files
+
+// Import your existing availability logic
+const { checkAvailability } = require('./availability');
+
+// Routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/api/status', (req, res) => {
+  res.json({ 
+    status: 'BusyBee is running! 🐝', 
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Test availability endpoint
+app.post('/api/availability', (req, res) => {
+  try {
+    const { userId, timeSlot } = req.body;
+    const availability = checkAvailability(userId, timeSlot);
+    res.json({ availability });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-];
-
-app.get("/status", (req, res) => {
-  const now = new Date();
-
-  const internalResult = computeStatus(now, blocks, {
-    preBufferMinutes: 30,
-    postBufferMinutes: 30
-  });
-
-  /*
-    PRIVACY ENFORCEMENT
-    Public response never includes reason
-  */
-  res.json({
-    status: internalResult.status,
-    nextAvailable: internalResult.nextAvailable
-  });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🐝 BusyBee server running on port ${PORT}`);
 });
-
+```__
