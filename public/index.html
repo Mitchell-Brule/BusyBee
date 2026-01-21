@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BusyBee - Friend Availability</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .logo {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🐝</div>
+        <h1>BusyBee</h1>
+        <p class="subtitle">Know when your friends are available without invading their privacy</p>
+        
+        <div class="status-card">
+            <h2>Server Status</h2>
+            <button class="btn" onclick="checkStatus()">Check Server Status</button>
+            <div id="status"></div>
+        </div>
+
+        <div class="status-card">
+            <h2>Coming Soon!</h2>
+            <p>🗓️ Calendar Integration</p>
+            <p>👥 Friend Management</p>
+            <p>🟢 Real-time Availability</p>
+            <p>🔒 Privacy-First Design</p>
+        </div>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = 'Checking...';
+            
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                statusDiv.innerHTML = `
+                    <strong>✅ ${data.status}</strong><br>
+                    <small>Last checked: ${new Date(data.timestamp).toLocaleString()}</small>
+                `;
+            } catch (error) {
+                statusDiv.innerHTML = '❌ Server not responding';
+            }
+        }
+    </script>
+</body>
+</html>
